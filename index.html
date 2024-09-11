@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style/index.css" />
+    <link rel="stylesheet" href="style/style.css" />
+    <title>Barcode Generator</title>
+  </head>
+  <body>
+    <div class="container mt-3">
+      <h1 class="text-center mb-5">Barcode Generator</h1>
+      <div class="row">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <form id="barcode-form">
+            <select
+              id="barcode_format"
+              class="form-select mb-4"
+              aria-label="barcode format select"
+              required
+            >
+              <option value="CODE128" selected>CODE128</option>
+              <option value="CODE39">CODE39</option>
+            </select>
+            <input
+              type="text"
+              name="barcode_value"
+              id="barcode_value"
+              class="form-control mb-4"
+              placeholder="Enter barcode value"
+              required
+            />
+            <input
+              type="number"
+              name="barcode_width"
+              id="barcode_width"
+              class="form-control mb-4"
+              placeholder="Enter barcode width value"
+            />
+            <input
+              type="number"
+              name="barcode_height"
+              id="barcode_height"
+              class="form-control mb-4"
+              placeholder="Enter barcode height value"
+            />
+            <input
+              type="text"
+              name="barcode_text"
+              id="barcode_text"
+              class="form-control mb-4"
+              placeholder="Enter barcode text"
+            />
+            <input
+              type="text"
+              name="barcode_color"
+              id="barcode_color"
+              class="form-control mb-4"
+              placeholder="Enter barcode color code value"
+            />
+            <button type="submit" class="btn btn-primary w-100">
+              Generate Barcode
+            </button>
+          </form>
+        </div>
+        <div class="col-md-6 mb-4 mb-md-0">
+          <div class="container mt-5 mb-4">
+            <div class="d-flex justify-content-center">
+              <svg id="barcode"></svg>
+            </div>
+            <div class="d-flex justify-content-center mt-3 gap-3">
+              <button id="download-btn" class="btn btn-secondary">
+                Download Barcode
+              </button>
+              <button id="print-btn" class="btn btn-secondary">
+                Print Barcode
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Made by Prajwal Kulkarni &#x1F607;</p>
+    </footer>
+
+    <script src="js/barcode.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+      document
+        .getElementById("barcode-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const barcodeValue = document.getElementById("barcode_value").value;
+          const format = document.getElementById("barcode_format").value;
+          const width = document.getElementById("barcode_width").value || 2;
+          const height = document.getElementById("barcode_height").value || 100;
+          const text =
+            document.getElementById("barcode_text").value || barcodeValue;
+          const color =
+            document.getElementById("barcode_color").value || "#000000";
+
+          JsBarcode("#barcode", barcodeValue, {
+            format: format,
+            width: parseFloat(width),
+            height: parseFloat(height),
+            text: text,
+            lineColor: color,
+          });
+        });
+
+      document
+        .getElementById("download-btn")
+        .addEventListener("click", function () {
+          const barcodeSVG = document.getElementById("barcode").outerHTML;
+          const blob = new Blob([barcodeSVG], { type: "image/svg+xml" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "barcode.svg";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+
+      document
+        .getElementById("print-btn")
+        .addEventListener("click", function () {
+          const barcodeSVG = document.getElementById("barcode").outerHTML;
+          const printWindow = window.open("print.html", "_blank");
+          printWindow.document.body.innerHTML = barcodeSVG;
+          printWindow.print();
+          printWindow.close();
+        });
+    </script>
+  </body>
+</html>
